@@ -49,27 +49,26 @@ function hosting_vnodectrl_schema() {
   // We store available images here.
   $schema['hosting_vnodectrl_images'] = array(
     'fields' => array(
-      'iid' => array(
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
+       'iid' => array(
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
         ),
-        'name' => array(
+       'provider' => array(
           'type' => 'text',
           'size' => 'big',
           'not null' => TRUE,
-        ),
-        'title' => array(
+       ),
+       'id' => array(
+          'type' => 'text',
+          'size' => 'big',
+          'not null' => TRUE,
+       ),
+       'name' => array(
 	      'type' => 'text',
           'size' => 'big',
           'not null' => TRUE,
-        ),
-        'description' => array(
-          'type' => 'text',
-          'size' => 'big',
-          'default' => '',
-          'not null' => TRUE,
-        ),
+       ),
     ),
     'primary key' => array('iid'),
   );
