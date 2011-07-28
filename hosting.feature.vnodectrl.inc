@@ -12,8 +12,6 @@ function vnodectrl_hosting_feature() {
     'status' => HOSTING_FEATURE_DISABLED,
   // module to enable/disable alongside feature
     'module' => 'vnodectrl',
-  // associate with a specific node type.
-    'node' => 'server',
   // which group to display in ( null , experimental )
     'group' => 'experimental'
   );
