@@ -46,7 +46,7 @@ function drush_hosting_vnodectrl_register_images() {
 
 function drush_hosting_vnodectrl_pre_hosting_task() {
   $task =& drush_get_context('HOSTING_TASK');
-  if ($task->ref->type == 'server' && ($task->task_type == 'create-node' || $task->task_type == 'delete-node')) {
+  if ($task->ref->type == 'server' && ($task->task_type == 'create-server' || $task->task_type == 'delete-server')) {
     drush_log(print_r($task->ref, TRUE), 'ok');
     $task->options['provider'] = $task->ref->provider;
     $task->options['image'] = $task->ref->image;
@@ -55,5 +55,18 @@ function drush_hosting_vnodectrl_pre_hosting_task() {
   }
   else {
     drush_log("something went wrong", 'error');
+  }
+}
+
+function drush_hosting_vnodectrl_post_hosting_task() {
+  $task = & drush_get_context('HOSTING_TASK');
+  if ($task->ref->type == 'server' && $task->task_type == 'create-server') {
+    $output =& drush_get_context('HOSTING_DRUSH_OUTPUT');
+    drush_log(print_r($output['object'], TRUE), 'ok');
+    if (isset($output['object']['node']['id'])) {
+      // Save the machine ID so we can operate on it.
+      $task->ref->instance_id = $output['object']['node']['id'];
+      node_save($task->ref);
+    }
   }
 }
