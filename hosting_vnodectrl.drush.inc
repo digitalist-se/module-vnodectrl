@@ -52,6 +52,7 @@ function drush_hosting_vnodectrl_pre_hosting_task() {
     $task->options['image'] = $task->ref->image;
     $task->options['name'] = $task->ref->title;
     $task->options['size'] = $task->ref->size;
+    $task->options['instance_id'] = $task->ref->instance_id;
   }
   else {
     drush_log("something went wrong", 'error');
@@ -68,5 +69,10 @@ function drush_hosting_vnodectrl_post_hosting_task() {
       $task->ref->instance_id = $output['object']['node']['id'];
       node_save($task->ref);
     }
+  }
+  elseif ($task->ref->type == 'server' && $task->task_type == 'delete-server') {
+    // Remove the machine ID since it is now removed.
+    $task->ref->instance_id = '';
+    node_save($task->ref);
   }
 }

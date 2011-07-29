@@ -109,7 +109,7 @@ function hosting_vnodectrl_get_sizes($provider) {
  * Get a list of available providers.
  */
 function hosting_vnodectrl_get_providers() {
-  // @todo Actually fetch this from hosting_vnodectrl.
+  // @todo Actually fetch this from vnodectrl.
   return array(
     'ec2-europe' => 'ec2-europe',
   );
