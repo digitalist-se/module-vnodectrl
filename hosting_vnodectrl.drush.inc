@@ -73,6 +73,7 @@ function drush_hosting_vnodectrl_post_hosting_task() {
   elseif ($task->ref->type == 'server' && $task->task_type == 'delete-server') {
     // Remove the machine ID since it is now removed.
     $task->ref->instance_id = '';
+    $task->ref->ip_addresses = array();
     node_save($task->ref);
   }
   elseif ($task->ref->type == 'server' && $task->task_type == 'server-info') {
