@@ -130,6 +130,11 @@ function hosting_vnodectrl_hosting_tasks() {
     'description' => t('Delete the instance.'),
   	'access callback' => 'hosting_vnodectrl_task_access'
   );
+  $tasks['server']['server-info'] = array(
+    'title' => t('Fetch server info'),
+    'description' => t('Fetch server information from the cloud hosting provider.'),
+  	'access callback' => 'hosting_vnodectrl_task_access'
+  );
   return $tasks;
 }
 

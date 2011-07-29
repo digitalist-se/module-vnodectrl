@@ -46,7 +46,7 @@ function drush_hosting_vnodectrl_register_images() {
 
 function drush_hosting_vnodectrl_pre_hosting_task() {
   $task =& drush_get_context('HOSTING_TASK');
-  if ($task->ref->type == 'server' && ($task->task_type == 'create-server' || $task->task_type == 'delete-server')) {
+  if ($task->ref->type == 'server' && ($task->task_type == 'create-server' || $task->task_type == 'delete-server' || $task->task_type == 'server-info')) {
     drush_log(print_r($task->ref, TRUE), 'ok');
     $task->options['provider'] = $task->ref->provider;
     $task->options['image'] = $task->ref->image;
@@ -74,5 +74,15 @@ function drush_hosting_vnodectrl_post_hosting_task() {
     // Remove the machine ID since it is now removed.
     $task->ref->instance_id = '';
     node_save($task->ref);
+  }
+  elseif ($task->ref->type == 'server' && $task->task_type == 'server-info') {
+    // Fill in relevant information about the server.
+    $output =& drush_get_context('HOSTING_DRUSH_OUTPUT');
+    drush_log(print_r($output['object'], TRUE), 'ok');
+    if (isset($output['object']['node']['public_ips'])) {
+      drush_log('yeah');
+      $task->ref->ip_addresses = $output['object']['node']['public_ips'];
+      node_save($task->ref);
+    }
   }
 }

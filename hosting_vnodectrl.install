@@ -48,6 +48,11 @@ function hosting_vnodectrl_schema() {
         'size' => 'big',
         'not null' => FALSE,
       ),
+      'status' => array(
+  		'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
     ),
     'primary key' => array('vid', 'nid'),
   );
