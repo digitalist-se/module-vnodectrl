@@ -53,6 +53,7 @@ function drush_hosting_vnodectrl_pre_hosting_task() {
     $task->options['name'] = $task->ref->title;
     $task->options['size'] = $task->ref->size;
     $task->options['instance_id'] = $task->ref->instance_id;
+    $task->options['additional'] = implode('|', $task->ref->additional);
   }
   else {
     drush_log("something went wrong", 'error');
