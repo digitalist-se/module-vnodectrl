@@ -16,42 +16,52 @@ function hosting_vnodectrl_perm() {
 function hosting_vnodectrl_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'server_node_form') {
     $node = $form['#node'];
-    $form['provider'] = array(
+    $form['vnodectrl'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Cloud hosting'),
+      '#description' => t('Specify settings for creating this machine on the fly here.'),
+    );
+    $form['vnodectrl']['instance_id'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Instance id'),
+          '#default_value' => $node->instance_id,
+          '#description' => t('The instance ID that identifies this server uniquely.'),
+    );
+    $form['vnodectrl']['provider'] = array(
       '#type' => 'select',
       '#title' => t('Provider'),
       '#default_value' => $node->provider,
       '#options' => hosting_vnodectrl_get_providers(),
     );
-    $form['image'] = array(
+    $form['vnodectrl']['image'] = array(
       '#type' => 'select',
       '#title' => t('Image'),
       '#default_value' => $node->image,
       '#options' => hosting_vnodectrl_get_images($node->provider),
     );
-    $form['size'] = array(
+    $form['vnodectrl']['size'] = array(
       '#type' => 'select',
       '#title' => t('Size'),
       '#default_value' => $node->size,
       '#options' => hosting_vnodectrl_get_sizes($node->provider),
     );
-    $form['instance_id'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Instance id'),
-      '#default_value' => $node->instance_id,
-      '#description' => t('The instance ID that identifies this server uniquely.'),
+    $form['vnodectrl']['additional'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Additional options'),
+      '#default_value' => implode("\r\n", $node->additional),
+      '#description' => t('Specify additional options to the command here. Specify one option per line.
+      Consult the vnodectrl documentation for information about available options.'),
     );
   }
 }
 
 function hosting_vnodectrl_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
-  $function = 'hosting_vnodectrl_' . $op;
-  if (function_exists($function)) {
-    return $function($node);
+  if ($node->type == 'server') {
+    $function = 'hosting_vnodectrl_' . $op;
+    if (function_exists($function)) {
+      return $function($node);
+    }
   }
-}
-
-function hosting_vnodectrl_validate($node) {
-  // @todo validate machine name
 }
 
 function hosting_vnodectrl_insert(&$node) {
@@ -59,18 +69,27 @@ function hosting_vnodectrl_insert(&$node) {
 }
 
 function hosting_vnodectrl_update(&$node) {
-  db_query("UPDATE hosting_vnodectrl_instance SET provider = '%s', name = '%s', image = '%s', size = '%s', instance_id = '%s' WHERE nid = %d AND vid = %d",
-  $node->provider,
-  $node->title,
-  $node->image,
-  $node->size,
-  $node->instance_id,
-  $node->nid,
-  $node->vid);
+  if (!db_result(db_query("SELECT COUNT(nid) FROM {hosting_vnodectrl_instance} WHERE nid = %d", $node->nid))) {
+    hosting_vnodectrl_insert($node);
+  }
+  else {
+    db_query("UPDATE {hosting_vnodectrl_instance} SET provider = '%s', name = '%s', image = '%s', size = '%s', instance_id = '%s', additional = '%s' WHERE nid = %d AND vid = %d",
+    $node->provider,
+    $node->title,
+    $node->image,
+    $node->size,
+    $node->instance_id,
+    $node->additional,
+    $node->nid,
+    $node->vid
+    );
+  }
 }
 
 function hosting_vnodectrl_load(&$node) {
-  return db_fetch_array(db_query("SELECT provider, name, image, size, instance_id FROM {hosting_vnodectrl_instance} WHERE nid = %d AND vid = %d", $node->nid, $node->vid));
+  $data = db_fetch_array(db_query("SELECT provider, name, image, size, instance_id, additional, extra FROM {hosting_vnodectrl_instance} WHERE nid = %d AND vid = %d", $node->nid, $node->vid));
+  $data['additional'] = explode("\r\n", $data['additional']);
+  return $data;
 }
 
 /**

@@ -48,7 +48,12 @@ function hosting_vnodectrl_schema() {
         'size' => 'big',
         'not null' => FALSE,
       ),
-      'status' => array(
+      'additional' => array(
+  		'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'extra' => array(
   		'type' => 'text',
         'size' => 'big',
         'not null' => FALSE,
