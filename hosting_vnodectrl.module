@@ -55,6 +55,26 @@ function hosting_vnodectrl_form_alter(&$form, $form_state, $form_id) {
   }
 }
 
+/**
+* Implementation of hook_node_info().
+*/
+function hosting_vnodectrl_node_info() {
+  $items = array(
+    'ns_article' => array(
+      'name' => t('Puppet configuration'),
+      'module' => 'node',
+      'description' => t('A puppet configuration described in yaml, see the puppet configuration for details.'),
+      'has_title' => '1',
+      'title_label' => t('Title'),
+      'has_body' => '1',
+      'body_label' => 'Puppet definition',
+      'min_word_count' => '0',
+      'help' => '',
+  ),
+  );
+  return $items;
+}
+
 function hosting_vnodectrl_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   if ($node->type == 'server') {
     $function = 'hosting_vnodectrl_' . $op;
